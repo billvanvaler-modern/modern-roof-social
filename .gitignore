@@ -1,0 +1,8 @@
+node_modules/
+.env
+uploads/
+data/queue.json
+data/rotation.json
+data/*.json
+*.log
+.DS_Store

@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Roof — Content Engine</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --surface2: #f0f2f6;
+      --border: #dde1ea;
+      --accent: #2558e8;
+      --accent-hover: #1a45c9;
+      --green: #16a34a;
+      --red: #dc2626;
+      --yellow: #d97706;
+      --text: #111827;
+      --muted: #6b7280;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo span { color: var(--accent); }
+
+    .badge {
+      background: var(--accent);
+      color: white;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    .main { max-width: 800px; margin: 0 auto; padding: 20px 16px; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Queue */
+    .queue-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .queue-empty .icon { font-size: 48px; margin-bottom: 12px; }
+    .queue-empty p { font-size: 15px; margin-bottom: 8px; }
+    .queue-empty small { font-size: 13px; }
+
+    .post-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .post-card-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pillar-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pillar-before_after   { background: #dbeafe; color: #1d4ed8; }
+    .pillar-education      { background: #dcfce7; color: #15803d; }
+    .pillar-crew_culture   { background: #ffedd5; color: #c2410c; }
+    .pillar-storm_response { background: #fee2e2; color: #b91c1c; }
+    .pillar-testimonial    { background: #f3e8ff; color: #7e22ce; }
+    .pillar-materials      { background: #e0f2fe; color: #0369a1; }
+    .pillar-team_spotlight { background: #fce7f3; color: #be185d; }
+    .pillar-community      { background: #d1fae5; color: #065f46; }
+    .pillar-faq            { background: #fef9c3; color: #92400e; }
+    .pillar-process        { background: #ede9fe; color: #5b21b6; }
+    .pillar-build_day      { background: #fff7ed; color: #c2410c; }
+    .pillar-manufacturer_monday { background: #f0fdf4; color: #166534; }
+
+    .source-tag {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .post-input {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      font-style: italic;
+    }
+
+    .media-row {
+      padding: 10px 16px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .media-row img {
+      height: 80px;
+      width: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .platforms-list { padding: 0 16px 4px; }
+
+    .platform-block {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+
+    .platform-block:last-child { border-bottom: none; }
+
+    .platform-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .platform-icon { font-size: 14px; }
+
+    .platform-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .platform-edit {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 10px 12px;
+      resize: vertical;
+      font-family: inherit;
+      display: none;
+    }
+
+    .edit-toggle {
+      font-size: 12px;
+      color: var(--accent);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .platform-toggle {
+      width: 36px; height: 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      background: var(--border);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .platform-toggle.on { background: var(--green); }
+    .platform-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: white;
+      border-radius: 50%;
+      transition: left 0.2s;
+    }
+    .platform-toggle.on::after { left: 18px; }
+
+    .platform-block.disabled {
+      opacity: 0.4;
+    }
+    .platform-block.disabled .platform-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .post-actions {
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-approve { background: var(--green); color: white; flex: 1; }
+    .btn-reject { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+    .btn-push { background: var(--accent); color: white; flex: 1; }
+    .btn-primary { background: var(--accent); color: white; }
+
+    .btn-approve:hover:not(:disabled) { opacity: 0.85; }
+    .btn-reject:hover:not(:disabled) { color: var(--red); border-color: var(--red); }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-pending { background: var(--yellow); }
+    .dot-approved { background: var(--green); }
+    .dot-rejected { background: var(--red); }
+    .dot-pushed { background: var(--accent); }
+
+    /* Calendar */
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .day-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .day-name { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+    .day-date { font-size: 13px; font-weight: 700; margin: 4px 0; }
+    .day-pillar { font-size: 10px; color: var(--accent); font-weight: 600; line-height: 1.3; }
+
+    /* Generate form */
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-section h3 { font-size: 16px; margin-bottom: 16px; font-weight: 600; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+    .form-group textarea,
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 10px 12px;
+      font-family: inherit;
+    }
+
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.3s ease;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--green); color: var(--green); }
+    .toast.error { border-color: var(--red); color: var(--red); }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .drop-zone:hover, .drop-zone.over {
+      border-color: var(--accent);
+      background: #eff4ff;
+    }
+    .drop-icon { font-size: 40px; margin-bottom: 10px; }
+    .drop-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .drop-sub { font-size: 13px; color: var(--muted); }
+
+    .progress-bar-track {
+      height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--accent); border-radius: 3px;
+      width: 0; transition: width 0.3s;
+    }
+
+    /* Generate bar */
+    .generate-bar {
+      background: var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      color: white;
+      flex-wrap: wrap;
+    }
+    .generate-bar select { color: var(--text); }
+    .generate-bar .btn { background: white; color: var(--accent); font-weight: 700; }
+
+    /* Photo grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .photo-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+      position: relative;
+    }
+    .photo-card:hover { transform: translateY(-2px); }
+    .photo-card.selected { border-color: var(--accent); }
+
+    .photo-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-card-footer {
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .photo-notes {
+      font-size: 12px;
+      color: var(--text);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .photo-check {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 24px; height: 24px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .photo-card.selected .photo-check { display: flex; }
+
+    .photo-delete {
+      position: absolute;
+      top: 8px; left: 8px;
+      width: 24px; height: 24px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+    }
+    .photo-card:hover .photo-delete { display: flex; }
+
+    .photo-used-badge {
+      position: absolute;
+      bottom: 40px; left: 8px;
+      background: var(--green);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Post type editor */
+    .post-type-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .post-type-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .post-type-header:hover { background: var(--border); }
+
+    .post-type-chevron {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .post-type-card.open .post-type-chevron { transform: rotate(180deg); }
+
+    .post-type-body {
+      display: none;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .post-type-card.open .post-type-body { display: flex; }
+
+    .post-type-body label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .post-type-body input,
+    .post-type-body textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 8px 12px;
+      font-family: inherit;
+    }
+
+    .post-type-body textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+    .delete-type-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--red);
+      border-color: var(--red);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .toggle-switch {
+      position: relative; width: 44px; height: 24px;
+      background: var(--border); border-radius: 12px; cursor: pointer;
+      transition: background 0.2s; flex-shrink: 0; border: none;
+    }
+    .toggle-switch.on { background: var(--green); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; background: white;
+      border-radius: 50%; transition: left 0.2s;
+    }
+    .toggle-switch.on::after { left: 23px; }
+
+    /* Day select */
+    .day-row {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-row:last-child { border-bottom: none; }
+    .day-row label { font-size: 14px; font-weight: 500; min-width: 100px; }
+    .day-row select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 13px;
+      padding: 6px 10px; flex: 1; margin-left: 12px; font-family: inherit;
+    }
+
+    /* Cycle editor */
+    .cycle-slot {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      cursor: grab;
+    }
+    .cycle-slot:last-child { border-bottom: none; }
+    .cycle-slot.dragging { opacity: 0.4; }
+    .drag-handle { color: var(--muted); font-size: 18px; cursor: grab; user-select: none; }
+    .cycle-slot select {
+      flex: 1; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 13px;
+      padding: 6px 10px; font-family: inherit;
+    }
+    .remove-slot {
+      color: var(--muted); background: none; border: none;
+      font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;
+    }
+    .remove-slot:hover { color: var(--red); }
+
+    @media (max-width: 600px) {
+      .week-grid { grid-template-columns: repeat(4, 1fr); }
+      .post-actions { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Modern <span>Roof</span> Social</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="contentLevel" style="font-size:13px;color:var(--muted)"></div>
+    <div class="badge" id="pendingBadge">0 pending</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('queue')">Queue</button>
+  <button class="tab" onclick="switchTab('approved')">Approved</button>
+  <button class="tab" onclick="switchTab('generate')">+ Generate</button>
+  <button class="tab" onclick="switchTab('calendar')">Calendar</button>
+  <button class="tab" onclick="switchTab('photos')">Photos</button>
+  <button class="tab" onclick="switchTab('history')">History</button>
+  <button class="tab" onclick="switchTab('admin')">⚙ Settings</button>
+</div>
+
+<div class="main">
+
+  <!-- QUEUE TAB -->
+  <div class="panel active" id="panel-queue">
+    <div id="queueList"></div>
+  </div>
+
+  <!-- APPROVED TAB -->
+  <div class="panel" id="panel-approved">
+    <div id="approvedList"></div>
+  </div>
+
+  <!-- GENERATE TAB -->
+  <div class="panel" id="panel-generate">
+    <div class="form-section">
+      <h3>Generate from a job or idea</h3>
+      <div class="form-group">
+        <label>Describe the job, project, or idea</label>
+        <textarea id="gen-input" placeholder="e.g. Just finished a standing seam metal roof in Westfield. Homeowner was thrilled — we replaced 40-year-old shingles, new decking in two spots, done in one day."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Post type</label>
+        <select id="gen-pillar"><option>Loading...</option></select>
+      </div>
+      <button class="btn btn-primary" id="gen-btn" onclick="generatePost()">Generate all 5 platforms</button>
+    </div>
+
+    <div class="form-section">
+      <h3>New Google review</h3>
+      <div class="form-group">
+        <label>Reviewer name (optional)</label>
+        <input type="text" id="rev-name" placeholder="e.g. Sarah M.">
+      </div>
+      <div class="form-group">
+        <label>Review text</label>
+        <textarea id="rev-comment" placeholder="Paste the review here..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="rev-btn" onclick="generateReview()">Generate review post</button>
+    </div>
+  </div>
+
+  <!-- CALENDAR TAB -->
+  <div class="panel" id="panel-calendar">
+    <p class="section-title">This week's rotation</p>
+    <div class="week-grid" id="weekGrid"></div>
+    <p class="section-title">Post count by type</p>
+    <div id="pillarStats"></div>
+  </div>
+
+  <!-- PHOTOS TAB -->
+  <div class="panel" id="panel-photos">
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+      ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+      <div class="drop-icon">📸</div>
+      <div class="drop-title">Drop photos here or click to upload</div>
+      <div class="drop-sub">Photos (JPG, PNG, HEIC) or Videos (MP4, MOV) — upload as many as you want at once</div>
+      <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none" onchange="uploadFiles(this.files)">
+    </div>
+
+    <div id="uploadProgress" style="display:none" class="form-section" style="padding:12px 16px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:8px">Uploading...</div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Generate from selection -->
+    <div id="photoGenerateBar" style="display:none" class="generate-bar">
+      <span id="selectedCount" style="font-weight:600;font-size:14px"></span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="photo-pillar" style="background:white;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--text)"><option>Loading...</option></select>
+        <button class="btn btn-primary" onclick="generateFromPhotos()">Generate posts</button>
+        <button class="btn" style="background:none;border:1px solid var(--border);color:var(--text)" onclick="clearPhotoSelection()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Photo grid -->
+    <div id="photoGrid" class="photo-grid"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="panel" id="panel-history">
+    <div id="historyList"></div>
+  </div>
+
+  <!-- ADMIN TAB -->
+  <div class="panel" id="panel-admin">
+
+    <div class="form-section">
+      <h3>Post types</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Add your own types, edit the name and AI instructions, or turn any type off. The AI uses the instructions to write the right kind of post.</p>
+      <div id="postTypeEditor"></div>
+      <button class="btn" style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-weight:600" onclick="addPostType()">+ Add post type</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Weekly schedule & posting times</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Which post type goes out each day, and what time it posts.</p>
+      <div id="weeklyScheduleEditor"></div>
+    </div>
+
+    <div class="form-section">
+      <h3>Rotation cycle</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">The order types cycle through when you text something in. Drag to reorder. More slots = more frequent. Fewer = less often.</p>
+      <div id="cycleEditor"></div>
+      <button class="btn" style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-weight:600" onclick="addCycleSlot()">+ Add slot</button>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;padding:14px" onclick="saveAdmin()">Save all settings</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PLATFORM_ICONS = {
+  facebook: '📘', instagram: '📸', tiktok: '🎵',
+  google: '🔍', linkedin: '💼',
+};
+
+let allPosts = [];
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['queue','approved','generate','calendar','photos','history','admin'][i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'queue' || name === 'approved' || name === 'history') loadPosts();
+  if (name === 'calendar') loadCalendar();
+  if (name === 'photos') { loadPhotos(); loadPhotoPillarDropdown(); }
+  if (name === 'admin') loadAdmin();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+async function api(method, url, body, timeoutMs = 60000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('Request timed out — the server is still working. Check the Queue tab in a moment.');
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ── Render helpers ────────────────────────────────────────────────────────────
+function pillarLabel(key) {
+  const labels = {
+    before_after:        'Before & After',
+    education:           'Homeowner Tips',
+    crew_culture:        'Crew & Culture',
+    storm_response:      'Storm Response',
+    testimonial:         'Review / Local',
+    materials:           'Materials & Brands',
+    team_spotlight:      'Team Spotlight',
+    community:           'Community / Local',
+    faq:                 'FAQ / Myth Busting',
+    process:             'How It Works',
+    build_day:           'Build Day',
+    manufacturer_monday: 'Manufacturer Monday',
+  };
+  return labels[key] || key;
+}
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+function renderCard(post, actions) {
+  const platforms = Object.entries(post.posts || {});
+  const platformsHTML = platforms.map(([platform, text]) => `
+    <div class="platform-block" id="platform-${post.id}-${platform}">
+      <div class="platform-name">
+        <span class="platform-icon">${PLATFORM_ICONS[platform] || '📄'}</span>
+        ${platform.charAt(0).toUpperCase() + platform.slice(1)}
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+          <button class="edit-toggle" onclick="toggleEdit('${post.id}','${platform}')">edit</button>
+          <button class="platform-toggle on" id="ptoggle-${post.id}-${platform}"
+            onclick="togglePlatformForPost('${post.id}','${platform}')"
+            title="Toggle this platform on/off for this post"></button>
+        </div>
+      </div>
+      <div class="platform-text" id="text-${post.id}-${platform}">${escapeHtml(text)}</div>
+      <textarea class="platform-edit" id="edit-${post.id}-${platform}" rows="5">${escapeHtml(text)}</textarea>
+    </div>
+  `).join('');
+
+  const mediaHTML = post.mediaUrls && post.mediaUrls.length
+    ? `<div class="media-row">${post.mediaUrls.map(url =>
+        `<img src="${url}" onerror="this.style.display='none'">`
+      ).join('')}</div>`
+    : '';
+
+  return `
+    <div class="post-card" id="card-${post.id}">
+      <div class="post-card-header">
+        <span class="pillar-tag pillar-${post.pillar}">${pillarLabel(post.pillar)}</span>
+        ${post.scheduledDate ? `<span style="font-size:12px;color:var(--green);font-weight:600">📅 ${new Date(post.scheduledDate).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</span>` : ''}
+        <span class="source-tag">${post.source} · ${timeAgo(post.createdAt)}</span>
+      </div>
+      <div class="post-input">"${escapeHtml((post.input || '').slice(0, 120))}${post.input && post.input.length > 120 ? '...' : ''}"</div>
+      ${mediaHTML}
+      <div class="platforms-list">${platformsHTML}</div>
+      <div class="post-actions">${actions(post)}</div>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function togglePlatformForPost(postId, platform) {
+  const btn = document.getElementById(`ptoggle-${postId}-${platform}`);
+  const block = document.getElementById(`platform-${postId}-${platform}`);
+  const isOn = btn.classList.contains('on');
+  btn.classList.toggle('on', !isOn);
+  block.classList.toggle('disabled', isOn);
+}
+
+function getEnabledPlatforms(postId, originalPosts) {
+  return Object.keys(originalPosts).filter(platform => {
+    const btn = document.getElementById(`ptoggle-${postId}-${platform}`);
+    return btn ? btn.classList.contains('on') : true;
+  });
+}
+
+function toggleEdit(postId, platform) {
+  const text = document.getElementById(`text-${postId}-${platform}`);
+  const edit = document.getElementById(`edit-${postId}-${platform}`);
+  const btn = text.parentElement.querySelector('.edit-toggle');
+  if (edit.style.display === 'block') {
+    text.style.display = '';
+    edit.style.display = 'none';
+    btn.textContent = 'edit';
+  } else {
+    text.style.display = 'none';
+    edit.style.display = 'block';
+    btn.textContent = 'done';
+  }
+}
+
+function getEdits(postId, originalPosts) {
+  // Only include platforms that are toggled ON
+  const edits = {};
+  for (const platform of Object.keys(originalPosts)) {
+    const toggle = document.getElementById(`ptoggle-${postId}-${platform}`);
+    const isEnabled = toggle ? toggle.classList.contains('on') : true;
+    if (!isEnabled) continue;
+    const el = document.getElementById(`edit-${postId}-${platform}`);
+    edits[platform] = el ? el.value : originalPosts[platform];
+  }
+  return edits;
+}
+
+// ── Load posts ────────────────────────────────────────────────────────────────
+async function loadPosts() {
+  try {
+    allPosts = await api('GET', '/api/posts');
+
+    const pending = allPosts.filter(p => p.status === 'pending');
+    const approved = allPosts.filter(p => p.status === 'approved');
+    const history = allPosts.filter(p => p.status === 'pushed' || p.status === 'rejected');
+
+    // Badge
+    const badge = document.getElementById('pendingBadge');
+    badge.style.display = pending.length ? 'block' : 'none';
+    badge.textContent = `${pending.length} pending`;
+
+    // Queue
+    const queueEl = document.getElementById('queueList');
+    if (!pending.length) {
+      queueEl.innerHTML = `<div class="queue-empty"><div class="icon">✅</div><p>Queue is empty</p><small>Text a photo or description to your Twilio number, or use + Generate to create posts manually.</small></div>`;
+    } else {
+      queueEl.innerHTML = pending.map(p => renderCard(p, (post) =>
+        `<button class="btn btn-approve" onclick="approve('${post.id}')">✓ Approve & Schedule</button>
+         <button class="btn btn-reject" onclick="reject('${post.id}')">Skip</button>
+         <button class="btn" style="background:none;border:1px solid var(--red);color:var(--red);padding:10px 14px" onclick="deletePostFromQueue('${post.id}')">Delete</button>`
+      )).join('');
+    }
+
+    // Approved
+    const approvedEl = document.getElementById('approvedList');
+    if (!approved.length) {
+      approvedEl.innerHTML = `<div class="queue-empty"><div class="icon">📋</div><p>No approved posts yet</p><small>Approve posts from the Queue tab.</small></div>`;
+    } else {
+      approvedEl.innerHTML = approved.map(p => renderCard(p, (post) =>
+        `<button class="btn btn-push" onclick="pushToGHL('${post.id}')">Push to GHL</button>`
+      )).join('');
+    }
+
+    // History
+    const historyEl = document.getElementById('historyList');
+    if (!history.length) {
+      historyEl.innerHTML = `<div class="queue-empty"><div class="icon">📁</div><p>No history yet</p></div>`;
+    } else {
+      historyEl.innerHTML = history.map(p => renderCard(p, (post) =>
+        `<span style="font-size:13px;color:var(--muted)">${post.status === 'pushed' ? '✅ Pushed to GHL' : '⏭ Skipped'}</span>`
+      )).join('');
+    }
+  } catch (err) {
+    toast('Error loading posts: ' + err.message, 'error');
+  }
+}
+
+async function approve(id) {
+  const btn = document.querySelector(`#card-${id} .btn-approve`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Scheduling...'; }
+  try {
+    const post = allPosts.find(p => p.id === id);
+    const edits = post ? getEdits(id, post.posts) : undefined;
+    const result = await api('POST', `/api/posts/${id}/approve`, { edits });
+
+    const date = new Date(result.scheduledDate);
+    const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+    const ghlNote = result.ghl?.note
+      ? ' (GHL not connected yet — saved locally)'
+      : ' → sent to GHL';
+
+    toast(`✅ Scheduled for ${dateStr}${ghlNote}`);
+    loadPosts();
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Approve'; }
+  }
+}
+
+async function reject(id) {
+  await api('POST', `/api/posts/${id}/reject`);
+  toast('Post skipped.');
+  loadPosts();
+}
+
+async function deletePostFromQueue(id) {
+  if (!confirm('Delete this post permanently?')) return;
+  try {
+    await api('DELETE', `/api/posts/${id}`);
+    toast('Post deleted.');
+    loadPosts();
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  }
+}
+
+async function pushToGHL(id) {
+  const btn = document.querySelector(`#card-${id} .btn-push`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Pushing...'; }
+  try {
+    const result = await api('POST', `/api/posts/${id}/push`);
+    const results = result.results || {};
+    const ok = Object.entries(results).filter(([,r]) => r.ok).map(([p]) => p);
+    const fail = Object.entries(results).filter(([,r]) => !r.ok).map(([p]) => p);
+    if (ok.length) toast(`✅ Pushed to GHL: ${ok.join(', ')}`);
+    if (fail.length) toast(`⚠️ Failed: ${fail.join(', ')}`, 'error');
+    loadPosts();
+  } catch (err) {
+    toast('Push failed: ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Push to GHL'; }
+  }
+}
+
+// ── Generate ─────────────────────────────────────────────────────────────────
+async function generatePost() {
+  const input = document.getElementById('gen-input').value.trim();
+  const pillar = document.getElementById('gen-pillar').value;
+  if (!input) { toast('Enter a description first', 'error'); return; }
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+
+  try {
+    await api('POST', '/api/posts/generate', { input, pillar });
+    toast('✅ Posts generated! Check the Queue tab.');
+    document.getElementById('gen-input').value = '';
+    switchTab('queue');
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate all 5 platforms';
+  }
+}
+
+async function generateReview() {
+  const name = document.getElementById('rev-name').value.trim();
+  const comment = document.getElementById('rev-comment').value.trim();
+  if (!comment) { toast('Paste the review text first', 'error'); return; }
+
+  const btn = document.getElementById('rev-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+
+  try {
+    await api('POST', '/api/posts/generate-review', { reviewerName: name, rating: 5, comment });
+    toast('✅ Review post generated! Check the Queue tab.');
+    document.getElementById('rev-name').value = '';
+    document.getElementById('rev-comment').value = '';
+    switchTab('queue');
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate review post';
+  }
+}
+
+// ── Calendar ─────────────────────────────────────────────────────────────────
+async function loadCalendar() {
+  try {
+    const [plan, posts] = await Promise.all([
+      api('GET', '/api/calendar'),
+      api('GET', '/api/posts'),
+    ]);
+
+    document.getElementById('weekGrid').innerHTML = plan.map(day => `
+      <div class="day-cell">
+        <div class="day-name">${day.dayName}</div>
+        <div class="day-date">${day.date.slice(5)}</div>
+        <div class="day-pillar">${pillarLabel(day.pillar)}</div>
+      </div>
+    `).join('');
+
+    const counts = {};
+    posts.filter(p => p.status !== 'rejected').forEach(p => {
+      counts[p.pillar] = (counts[p.pillar] || 0) + 1;
+    });
+
+    const pillarKeys = ['before_after','education','testimonial','materials','team_spotlight','crew_culture','faq','community','storm_response','process'];
+    document.getElementById('pillarStats').innerHTML = pillarKeys.map(key => {
+      const count = counts[key] || 0;
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span class="pillar-tag pillar-${key}" style="width:130px;text-align:center">${pillarLabel(key)}</span>
+        <span style="font-size:22px;font-weight:700">${count}</span>
+        <span style="color:var(--muted);font-size:13px">posts</span>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    toast('Error loading calendar: ' + err.message, 'error');
+  }
+}
+
+// ── Photos ────────────────────────────────────────────────────────────────────
+let allPhotos = [];
+let selectedPhotoIds = new Set();
+
+function dzOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('over'); }
+function dzLeave(e) { document.getElementById('dropZone').classList.remove('over'); }
+function dzDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('over');
+  uploadFiles(e.dataTransfer.files);
+}
+
+async function uploadFiles(files) {
+  if (!files || !files.length) return;
+  const bar = document.getElementById('uploadProgress');
+  const fill = document.getElementById('progressFill');
+  bar.style.display = 'block';
+  fill.style.width = '10%';
+
+  const form = new FormData();
+  Array.from(files).forEach(f => form.append('photos', f));
+
+  try {
+    fill.style.width = '40%';
+    const res = await fetch('/api/photos/upload', { method: 'POST', body: form });
+    fill.style.width = '90%';
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    fill.style.width = '100%';
+    toast(`✅ ${data.uploaded.length} photo${data.uploaded.length > 1 ? 's' : ''} uploaded!`);
+    setTimeout(() => { bar.style.display = 'none'; fill.style.width = '0'; }, 800);
+    loadPhotos();
+  } catch (err) {
+    bar.style.display = 'none';
+    toast('Upload failed: ' + err.message, 'error');
+  }
+}
+
+async function loadPhotos() {
+  try {
+    allPhotos = await api('GET', '/api/photos');
+    renderPhotoGrid();
+  } catch (err) {
+    toast('Error loading photos: ' + err.message, 'error');
+  }
+}
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  if (!allPhotos.length) {
+    grid.innerHTML = `<div class="queue-empty" style="grid-column:1/-1">
+      <div class="icon">📷</div>
+      <p>No photos yet</p>
+      <small>Drag photos above or click to upload. Upload whole batches at once from CompanyCam or your camera roll.</small>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = allPhotos.map(p => {
+    const previewUrl = p.thumbnailUrl || p.url;
+    const isVid = p.isVideo;
+    const dur = p.duration ? `${Math.round(p.duration)}s` : '';
+    return `
+    <div class="photo-card ${selectedPhotoIds.has(p.id) ? 'selected' : ''}"
+      id="pcard-${p.id}" onclick="togglePhotoSelect('${p.id}')">
+      ${isVid && !p.thumbnailUrl
+        ? `<div style="aspect-ratio:1;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px">🎬</div>`
+        : `<img src="${previewUrl}" alt="${escapeHtml(p.originalName)}" loading="lazy">`
+      }
+      ${isVid ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.55);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none">▶️</div>` : ''}
+      ${dur ? `<div style="position:absolute;bottom:40px;right:8px;background:rgba(0,0,0,0.6);color:white;font-size:10px;padding:2px 5px;border-radius:4px">${dur}</div>` : ''}
+      ${p.usedInPosts.length ? `<div class="photo-used-badge">Used ${p.usedInPosts.length}×</div>` : ''}
+      <div class="photo-check">✓</div>
+      <button class="photo-delete" onclick="event.stopPropagation(); deletePhoto('${p.id}')">×</button>
+      <div class="photo-card-footer">
+        <div class="photo-notes" id="pnotes-${p.id}" onclick="event.stopPropagation(); editPhotoNote('${p.id}')"
+          title="Click to add notes">
+          ${p.notes || '<span style="color:var(--muted)">Add note...</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePhotoSelect(id) {
+  if (selectedPhotoIds.has(id)) {
+    selectedPhotoIds.delete(id);
+  } else {
+    selectedPhotoIds.add(id);
+  }
+  document.getElementById(`pcard-${id}`)?.classList.toggle('selected', selectedPhotoIds.has(id));
+  updateGenerateBar();
+}
+
+function clearPhotoSelection() {
+  selectedPhotoIds.clear();
+  document.querySelectorAll('.photo-card').forEach(c => c.classList.remove('selected'));
+  updateGenerateBar();
+}
+
+function updateGenerateBar() {
+  const bar = document.getElementById('photoGenerateBar');
+  const count = selectedPhotoIds.size;
+  bar.style.display = count ? 'flex' : 'none';
+  document.getElementById('selectedCount').textContent =
+    `${count} photo${count > 1 ? 's' : ''} selected`;
+}
+
+async function editPhotoNote(id) {
+  const photo = allPhotos.find(p => p.id === id);
+  const note = prompt('Add a note about this photo (job location, what was done, etc.):', photo?.notes || '');
+  if (note === null) return;
+  try {
+    await api('PATCH', `/api/photos/${id}`, { notes: note });
+    const p = allPhotos.find(x => x.id === id);
+    if (p) p.notes = note;
+    renderPhotoGrid();
+  } catch (err) {
+    toast('Error saving note: ' + err.message, 'error');
+  }
+}
+
+async function deletePhoto(id) {
+  if (!confirm('Delete this photo?')) return;
+  try {
+    await api('DELETE', `/api/photos/${id}`);
+    selectedPhotoIds.delete(id);
+    loadPhotos();
+    updateGenerateBar();
+  } catch (err) {
+    toast('Error deleting: ' + err.message, 'error');
+  }
+}
+
+async function generateFromPhotos() {
+  const photoIds = Array.from(selectedPhotoIds);
+  const pillar = document.getElementById('photo-pillar').value;
+  if (!photoIds.length) { toast('Select at least one photo', 'error'); return; }
+
+  const btn = document.querySelector('#photoGenerateBar .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+
+  try {
+    await api('POST', '/api/photos/generate', { photoIds, pillar });
+    toast('✅ Posts generated! Check the Queue tab.');
+    clearPhotoSelection();
+    switchTab('queue');
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate posts';
+  }
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+let adminConfig = null;
+
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function getPostTypes() {
+  return adminConfig?.postTypes || {};
+}
+
+function pillarOptions(selected) {
+  const types = getPostTypes();
+  return Object.entries(types).map(([key, def]) =>
+    `<option value="${key}" ${key === selected ? 'selected' : ''}>${def.label}</option>`
+  ).join('');
+}
+
+async function loadAdmin() {
+  try {
+    const { config } = await api('GET', '/api/admin/rotation');
+    adminConfig = config;
+    renderPostTypeEditor();
+    renderWeeklySchedule();
+    renderCycleEditor(config.rotationCycle);
+  } catch (err) {
+    toast('Error loading settings: ' + err.message, 'error');
+  }
+}
+
+// ── Post type editor ──────────────────────────────────────────────────────────
+function renderPostTypeEditor() {
+  const types = getPostTypes();
+  document.getElementById('postTypeEditor').innerHTML = Object.entries(types).map(([key, def]) =>
+    postTypeCardHTML(key, def)
+  ).join('');
+}
+
+function postTypeCardHTML(key, def) {
+  const enabled = def.enabled !== false;
+  return `
+    <div class="post-type-card" id="ptcard-${key}">
+      <div class="post-type-header" onclick="toggleCard('${key}')">
+        <button class="toggle-switch ${enabled ? 'on' : ''}" id="pt-toggle-${key}"
+          onclick="event.stopPropagation(); togglePostType('${key}')"></button>
+        <span style="font-weight:600;font-size:14px" id="pt-label-display-${key}">${def.label}</span>
+        <span class="post-type-chevron">▼</span>
+      </div>
+      <div class="post-type-body">
+        <div>
+          <label>Display name</label>
+          <input type="text" id="pt-label-${key}" value="${escapeHtml(def.label)}"
+            oninput="document.getElementById('pt-label-display-${key}').textContent=this.value">
+        </div>
+        <div>
+          <label>AI instructions — tell Claude what this post type should do</label>
+          <textarea id="pt-instructions-${key}" rows="5">${escapeHtml(def.aiInstructions || '')}</textarea>
+        </div>
+        <button class="delete-type-btn" onclick="deletePostType('${key}')">Delete this post type</button>
+      </div>
+    </div>
+  `;
+}
+
+function toggleCard(key) {
+  document.getElementById(`ptcard-${key}`).classList.toggle('open');
+}
+
+function togglePostType(key) {
+  const btn = document.getElementById(`pt-toggle-${key}`);
+  btn.classList.toggle('on');
+}
+
+function deletePostType(key) {
+  if (!confirm(`Delete "${getPostTypes()[key]?.label}"? It will be removed from the rotation too.`)) return;
+  delete adminConfig.postTypes[key];
+  adminConfig.rotationCycle = adminConfig.rotationCycle.filter(p => p !== key);
+  renderPostTypeEditor();
+  renderWeeklySchedule();
+  renderCycleEditor(adminConfig.rotationCycle);
+}
+
+function addPostType() {
+  const label = prompt('Name for the new post type? (e.g. "Manufacturer Monday")');
+  if (!label || !label.trim()) return;
+  const key = slugify(label.trim());
+  if (adminConfig.postTypes[key]) {
+    toast('A post type with that name already exists', 'error'); return;
+  }
+  adminConfig.postTypes[key] = {
+    label: label.trim(),
+    enabled: true,
+    aiInstructions: `This is a "${label.trim()}" post. Describe what this post type should cover and how it should sound. The AI will use these instructions every time it generates this type of post.`,
+  };
+  renderPostTypeEditor();
+  renderWeeklySchedule();
+  renderCycleEditor(adminConfig.rotationCycle);
+  // Auto-open the new card so they can edit instructions right away
+  setTimeout(() => {
+    const card = document.getElementById(`ptcard-${key}`);
+    if (card) { card.classList.add('open'); card.scrollIntoView({ behavior: 'smooth' }); }
+  }, 100);
+}
+
+function collectPostTypes() {
+  const types = {};
+  Object.keys(adminConfig.postTypes).forEach(key => {
+    types[key] = {
+      label: document.getElementById(`pt-label-${key}`)?.value || adminConfig.postTypes[key].label,
+      enabled: document.getElementById(`pt-toggle-${key}`)?.classList.contains('on') ?? true,
+      aiInstructions: document.getElementById(`pt-instructions-${key}`)?.value || adminConfig.postTypes[key].aiInstructions,
+    };
+  });
+  return types;
+}
+
+// ── Weekly schedule ───────────────────────────────────────────────────────────
+function renderWeeklySchedule() {
+  document.getElementById('weeklyScheduleEditor').innerHTML = [0,1,2,3,4,5,6].map(day => {
+    const timeVal = adminConfig.postingTimes?.[day] || '10:00-12:00';
+    const [startT, endT] = timeVal.includes('-') ? timeVal.split('-') : [timeVal, timeVal];
+    return `
+    <div class="day-row" style="flex-wrap:wrap;gap:6px">
+      <label style="min-width:90px">${DAY_NAMES[day]}</label>
+      <select id="day-${day}" style="flex:1;min-width:140px">${pillarOptions(adminConfig.weeklySchedule[day])}</select>
+      <div style="display:flex;align-items:center;gap:4px;white-space:nowrap">
+        <input type="time" id="time-start-${day}" value="${startT}"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:5px 8px;width:100px">
+        <span style="font-size:12px;color:var(--muted)">to</span>
+        <input type="time" id="time-end-${day}" value="${endT}"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:5px 8px;width:100px">
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Rotation cycle ────────────────────────────────────────────────────────────
+function renderCycleEditor(cycle) {
+  document.getElementById('cycleEditor').innerHTML = cycle.map((pillar, i) => `
+    <div class="cycle-slot" draggable="true" data-index="${i}"
+      ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dropSlot(event)">
+      <span class="drag-handle">⠿</span>
+      <select id="cycle-${i}">${pillarOptions(pillar)}</select>
+      <button class="remove-slot" onclick="removeCycleSlot(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function addCycleSlot() {
+  const cycle = getCycleValues();
+  cycle.push(Object.keys(getPostTypes())[0] || 'before_after');
+  renderCycleEditor(cycle);
+}
+
+function removeCycleSlot(i) {
+  const cycle = getCycleValues();
+  cycle.splice(i, 1);
+  renderCycleEditor(cycle);
+}
+
+function getCycleValues() {
+  return Array.from(document.querySelectorAll('#cycleEditor .cycle-slot select')).map(s => s.value);
+}
+
+let dragSrcIndex = null;
+function dragStart(e) {
+  dragSrcIndex = parseInt(e.currentTarget.dataset.index);
+  e.currentTarget.classList.add('dragging');
+}
+function dragOver(e) { e.preventDefault(); }
+function dropSlot(e) {
+  e.preventDefault();
+  const targetIndex = parseInt(e.currentTarget.dataset.index);
+  if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+  const cycle = getCycleValues();
+  const [moved] = cycle.splice(dragSrcIndex, 1);
+  cycle.splice(targetIndex, 0, moved);
+  renderCycleEditor(cycle);
+  dragSrcIndex = null;
+}
+
+// ── Save ──────────────────────────────────────────────────────────────────────
+async function saveAdmin() {
+  const postTypes = collectPostTypes();
+  const weeklySchedule = {};
+  const postingTimes = {};
+  [0,1,2,3,4,5,6].forEach(day => {
+    weeklySchedule[day] = document.getElementById(`day-${day}`).value;
+    const s = document.getElementById(`time-start-${day}`).value;
+    const e = document.getElementById(`time-end-${day}`).value;
+    postingTimes[day] = s === e ? s : `${s}-${e}`;
+  });
+  const rotationCycle = getCycleValues();
+
+  try {
+    await api('POST', '/api/admin/rotation', { weeklySchedule, rotationCycle, postTypes, postingTimes });
+    adminConfig = { ...adminConfig, weeklySchedule, rotationCycle, postTypes, postingTimes };
+    toast('✅ Settings saved!');
+  } catch (err) {
+    toast('Error saving: ' + err.message, 'error');
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function loadPillarDropdown() {
+  try {
+    const pillars = await api('GET', '/api/pillars');
+    const opts = pillars
+      .filter(p => p.enabled !== false)
+      .map(p => `<option value="${p.key}">${p.label}</option>`)
+      .join('');
+    document.getElementById('gen-pillar').innerHTML = opts;
+  } catch {}
+}
+
+async function loadPhotoPillarDropdown() {
+  try {
+    const pillars = await api('GET', '/api/pillars');
+    const opts = pillars
+      .filter(p => p.enabled !== false)
+      .map(p => `<option value="${p.key}">${p.label}</option>`)
+      .join('');
+    document.getElementById('photo-pillar').innerHTML = opts;
+  } catch {}
+}
+
+async function loadContentLevel() {
+  try {
+    const data = await api('GET', '/api/content-level');
+    const el = document.getElementById('contentLevel');
+    const total = data.pending + data.approved;
+    if (data.low) {
+      el.innerHTML = `<span style="color:var(--red);font-weight:600">⚠️ Low — ${total} post${total===1?'':'s'} left</span>`;
+    } else {
+      el.innerHTML = `<span style="color:var(--green)">✓ ${total} posts queued</span>`;
+    }
+  } catch {}
+}
+
+loadPosts();
+loadPillarDropdown();
+loadContentLevel();
+setInterval(loadContentLevel, 30000);
+
+// Auto-refresh queue every 10 seconds so posts appear when generation finishes
+setInterval(() => {
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab && ['Queue','Approved','History'].includes(activeTab.textContent.trim())) {
+    loadPosts();
+  }
+}, 10000);
+</script>
+</body>
+</html>
