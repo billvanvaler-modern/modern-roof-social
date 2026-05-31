@@ -217,6 +217,9 @@ app.post('/api/posts/:id/approve', async (req, res) => {
     // Push to GHL immediately
     const platforms = Object.keys(approved.posts || {});
     const ghlResults = {};
+    console.log('[APPROVE] GHL_USER_ID:', process.env.GHL_USER_ID || 'NOT SET');
+    console.log('[APPROVE] GHL_PRIVATE_TOKEN:', process.env.GHL_PRIVATE_TOKEN ? 'SET' : 'NOT SET');
+    console.log('[APPROVE] platforms to push:', platforms);
     const ghlConfigured = process.env.GHL_PRIVATE_TOKEN && !process.env.GHL_PRIVATE_TOKEN.includes('placeholder');
 
     if (ghlConfigured) {
@@ -230,8 +233,10 @@ app.post('/api/posts/:id/approve', async (req, res) => {
             mediaUrls: approved.mediaUrls,
             scheduleDate: scheduleTime,
           });
-          ghlResults[platform] = { ok: true, id: result.id };
+          console.log('[GHL] pushed', platform, '->', JSON.stringify(result).slice(0, 100));
+          ghlResults[platform] = { ok: true, id: result?.results?.post?._id };
         } catch (err) {
+          console.log('[GHL] failed', platform, '->', err.message, JSON.stringify(err.response?.data || {}).slice(0,200));
           ghlResults[platform] = { ok: false, error: err.message };
         }
       }
