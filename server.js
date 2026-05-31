@@ -215,7 +215,7 @@ app.post('/api/posts/:id/approve', async (req, res) => {
     });
 
     // Push to GHL immediately
-    const platforms = Object.keys(approved.posts);
+    const platforms = Object.keys(approved.posts || {});
     const ghlResults = {};
     const ghlConfigured = process.env.GHL_PRIVATE_TOKEN && !process.env.GHL_PRIVATE_TOKEN.includes('placeholder');
 
@@ -273,11 +273,11 @@ app.post('/api/posts/:id/push', async (req, res) => {
     const post = getById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Not found' });
 
-    const platforms = Object.keys(post.posts);
+    const platforms = Object.keys(post.posts || {});
     const results = {};
 
     for (const platform of platforms) {
-      const caption = post.posts[platform];
+      const caption = (post.posts || {})[platform];
       if (!caption) continue;
       try {
         const result = await createPost({
