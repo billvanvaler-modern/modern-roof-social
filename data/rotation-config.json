@@ -1,0 +1,104 @@
+{
+  "postingTimes": {
+    "0": "09:00-11:00",
+    "1": "07:00-08:30",
+    "2": "10:00-12:00",
+    "3": "09:30-11:30",
+    "4": "10:30-12:30",
+    "5": "10:00-12:00",
+    "6": "09:00-11:00"
+  },
+  "weeklySchedule": {
+    "0": "community",
+    "1": "manufacturer_monday",
+    "2": "before_after",
+    "3": "team_spotlight",
+    "4": "materials",
+    "5": "before_after",
+    "6": "testimonial"
+  },
+  "rotationCycle": [
+    "before_after",
+    "education",
+    "testimonial",
+    "before_after",
+    "team_spotlight",
+    "manufacturer_monday",
+    "before_after",
+    "faq",
+    "crew_culture",
+    "testimonial",
+    "before_after",
+    "education",
+    "storm_response",
+    "materials",
+    "before_after",
+    "community",
+    "education",
+    "team_spotlight",
+    "faq",
+    "process"
+  ],
+  "postTypes": {
+    "before_after": {
+      "label": "Before & After",
+      "enabled": true,
+      "aiInstructions": "This is a before/after transformation post. Lead with the problem (what the old roof looked like, what was wrong), reveal the solution (what we did, materials used), show the result (one day, done, homeowner happy). Be specific — name the location, material, and one interesting detail."
+    },
+    "education": {
+      "label": "Homeowner Tips",
+      "enabled": true,
+      "aiInstructions": "This is a homeowner education post. Pick ONE useful thing to teach. Format as 3 short bullet points or a numbered list. Cover topics like: warning signs a roof is failing, what to check after a storm, how to pick a contractor, what questions to ask, how insurance claims work, shingles vs metal vs TPO, how long roofs last, what causes leaks. End with a low-pressure CTA."
+    },
+    "testimonial": {
+      "label": "Review / Local",
+      "enabled": true,
+      "aiInstructions": "This is a review / social proof post. Let the customer's experience tell the story. Name the neighborhood or town. If a review quote is provided, use it. Keep the brand voice humble and grateful — not boastful. End with a soft CTA."
+    },
+    "materials": {
+      "label": "Materials & Brands",
+      "enabled": true,
+      "aiInstructions": "This is a materials and manufacturer education post. Explain a roofing material, product line, or manufacturer in plain English. Compare options honestly. Talk about cost, lifespan, pros/cons, and what Modern Roof recommends and why. Brands can include: GAF, Owens Corning, CertainTeed, Tamko, Metal Roofing Alliance, DECRA, etc. Avoid sounding like a sales pitch — sound like an expert giving honest advice."
+    },
+    "team_spotlight": {
+      "label": "Team Spotlight",
+      "enabled": true,
+      "aiInstructions": "This is a team spotlight post. Feature a specific person on the Modern Roof team — could be Bill, a crew lead, a longtime employee. Share something real about them: how long they've been around, what they're good at, a story from a job, what they care about. The goal is to make the company feel human and trustworthy. First-person quotes work great here."
+    },
+    "crew_culture": {
+      "label": "Crew & Culture",
+      "enabled": true,
+      "aiInstructions": "This is a crew/culture post. Make it human and personal. If a crew member is mentioned, use their first name. Talk about what they do well or what makes them different. The goal is trust — homeowners hire people, not companies. Avoid hard selling."
+    },
+    "faq": {
+      "label": "FAQ / Myth Busting",
+      "enabled": true,
+      "aiInstructions": "This is a FAQ / myth-busting post. Answer one common question homeowners have about roofing, OR bust one common myth. Examples: 'Does homeowner's insurance cover roof replacement?', 'How do I know if I need a repair or a full replacement?', 'Are metal roofs loud in the rain?', 'What's the difference between a 25-year and 30-year shingle?' Be direct and honest."
+    },
+    "community": {
+      "label": "Community / Local",
+      "enabled": true,
+      "aiInstructions": "This is a community / local connection post. Connect Modern Roof to the local area — towns served, local events, sponsorships, charity work, or just pride in working in a specific neighborhood. Name specific towns or neighborhoods. This builds local SEO and community trust."
+    },
+    "storm_response": {
+      "label": "Storm Response",
+      "enabled": true,
+      "aiInstructions": "This is a storm/weather response post. Make it timely and urgent. Practical advice first — what homeowners should check, what to document for insurance. Then the warning about storm-chasers knocking on doors. Position Modern Roof as the trustworthy local expert. Offer a free no-pressure inspection."
+    },
+    "process": {
+      "label": "How It Works",
+      "enabled": true,
+      "aiInstructions": "This is a 'how it works' / process post. Walk through what happens when you hire Modern Roof — from the free inspection to the final cleanup. Demystify the process. Homeowners are nervous about contractors; showing them exactly what to expect builds confidence and removes friction from calling."
+    },
+    "manufacturer_monday": {
+      "label": "Manufacturer Monday",
+      "enabled": true,
+      "aiInstructions": "This is a Manufacturer Monday post — a weekly spotlight on a roofing manufacturer or brand. Feature one brand (GAF, Owens Corning, CertainTeed, Tamko, DECRA, Metal Roofing Alliance, etc.). Cover: what they're known for, their best product line, why Modern Roof recommends them, and one interesting fact homeowners don't know. Make it educational, not a sales pitch. End with why this matters when choosing a roof."
+    },
+    "build_day": {
+      "label": "Build Day",
+      "enabled": true,
+      "aiInstructions": "This is a Build Day post — real-time or same-day content from an active job site. The energy should feel live and in-the-moment. Show the work happening: tear-off in progress, decking being replaced, shingles going down, crew working at height. Use active language ('Today we're...', 'Right now on...', 'This morning the crew...'). Name the town or neighborhood. Keep it punchy and visual — this is the kind of post that makes people stop scrolling because it looks like something actually happening. End with a soft brag about the crew or the craftsmanship."
+    }
+  }
+}
