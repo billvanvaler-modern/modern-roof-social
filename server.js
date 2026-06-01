@@ -92,8 +92,9 @@ app.post('/webhook/slack', async (req, res) => {
     const event = body.event;
     if (!event) return;
 
-    // Ignore messages from bots (including ourselves)
+    // Ignore messages from bots, system messages, and channel join notifications
     if (event.bot_id || event.subtype === 'bot_message') return;
+    if (event.subtype) return; // covers channel_join, channel_leave, etc.
 
     // Message with text or files in a channel
     if (event.type === 'message' && (event.text || event.files)) {
