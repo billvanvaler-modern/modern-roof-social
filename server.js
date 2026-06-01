@@ -208,10 +208,14 @@ app.post('/api/posts/:id/approve', async (req, res) => {
     // Auto-calculate schedule time based on post type if not overridden
     const scheduleTime = scheduledDate || getNextScheduledTime(post.pillar);
 
+    // Use edits if they have content, otherwise fall back to saved posts
+    const postsToSave = (edits && Object.keys(edits).length > 0) ? edits : post.posts;
+    console.log('[APPROVE] postsToSave keys:', Object.keys(postsToSave || {}));
+
     // Save as approved with schedule date + any edits
-    const approved = approvePost(req.params.id, {
+    const approved = await approvePost(req.params.id, {
       scheduledDate: scheduleTime,
-      edits: edits || post.posts,
+      edits: postsToSave,
     });
 
     // Push to GHL immediately
