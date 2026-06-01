@@ -92,22 +92,79 @@ app.post('/webhook/slack', async (req, res) => {
     const event = body.event;
     if (!event) return;
 
-    // Ignore messages from bots, system messages, and channel join notifications
+    // Ignore bots and system messages
     if (event.bot_id || event.subtype === 'bot_message') return;
-    if (event.subtype) return; // covers channel_join, channel_leave, etc.
+    if (event.subtype) return;
 
-    // Message with text or files in a channel
+    // Queue the event for async processing
     if (event.type === 'message' && (event.text || event.files)) {
-      await slackHandleMessage({
-        text: event.text,
-        files: event.files,
+      const { getClient } = require('./lib/db');
+      await getClient().from('slack_events').insert({
         channel: event.channel,
         ts: event.ts,
-        userId: event.user,
+        user_id: event.user,
+        text: event.text || '',
+        files: event.files || [],
+        processed: false,
       });
+      console.log('[Slack] Event queued for processing');
     }
   } catch (err) {
     console.error('Slack event error:', err);
+  }
+});
+
+// Cron endpoint — called every minute by Vercel cron
+app.get('/api/cron/process-slack', async (req, res) => {
+  // Verify it's called by Vercel cron
+  const auth = req.headers.authorization;
+  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const { getClient } = require('./lib/db');
+    const db = getClient();
+
+    // Get unprocessed events
+    const { data: events } = await db.from('slack_events')
+      .select('*')
+      .eq('processed', false)
+      .order('created_at', { ascending: true })
+      .limit(5);
+
+    if (!events || !events.length) {
+      return res.json({ processed: 0 });
+    }
+
+    let processed = 0;
+    for (const event of events) {
+      try {
+        await slackHandleMessage({
+          text: event.text,
+          files: event.files || [],
+          channel: event.channel,
+          ts: event.ts,
+          userId: event.user_id,
+        });
+        await db.from('slack_events').update({
+          processed: true,
+          processed_at: new Date().toISOString(),
+        }).eq('id', event.id);
+        processed++;
+      } catch (err) {
+        console.error('[Cron] Failed to process slack event:', err.message);
+        await db.from('slack_events').update({
+          processed: true,
+          error: err.message,
+          processed_at: new Date().toISOString(),
+        }).eq('id', event.id);
+      }
+    }
+
+    res.json({ processed });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
